@@ -1,15 +1,19 @@
 import './App.css';
+import Nav from './Nav';
 import Header from './Header';
 import Employees from './Employees';
+import GroupedTeamMembers from './GroupedTeamMembers';
 import Footer from './Footer';
-import { useState } from 'react';
+import NotFound from './NotFound';
+import { useState, useEffect } from 'react';
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 
 
 export default function App() {
 
-  const [selectedTeam, setTeam] = useState("TeamB");
+  const [selectedTeam, setTeam] = useState(JSON.parse(localStorage.getItem("selectedTeam")) || "TeamB");
 
-  const [employees, setEmployees] = useState([
+  const [employees, setEmployees] = useState(JSON.parse(localStorage.getItem("employeeList")) || [
     {
       id: 1,
       fullName: "Bob Jones",
@@ -96,6 +100,11 @@ export default function App() {
     }
   ]);
 
+  useEffect(()=>{
+    localStorage.setItem("employeeList", JSON.stringify(employees));
+    localStorage.setItem("selectedTeam",JSON.stringify(selectedTeam));
+  },[employees, selectedTeam])
+
   function handleTeanSelectionChange(event){
     setTeam(event.target.value);
   }
@@ -109,14 +118,23 @@ export default function App() {
   
   return (
     <div>
-      {/* React ⚛️ + Vite ⚡ + Replit */}
-      <Header selectedTeam={selectedTeam}
-        teamCount = {employees.filter(employee=> employee.teamName === selectedTeam).length}/>
-      <Employees employees={employees}
-        selectedTeam={selectedTeam}
-        handleTeanSelectionChange={handleTeanSelectionChange}
-        handleEmployeeCardClick={handleEmployeeCardClick}/>
-      <Footer/>
+      <Router>
+        <Nav />
+        <Header selectedTeam={selectedTeam}
+          teamCount = {employees.filter(employee=> employee.teamName === selectedTeam).length}/>
+        <Routes>
+              <Route path="/"
+                    element={
+                      <Employees employees={employees}
+                      selectedTeam={selectedTeam}
+                      handleTeanSelectionChange={handleTeanSelectionChange}
+                      handleEmployeeCardClick={handleEmployeeCardClick}/>
+                    }/>
+              <Route path="/GroupedTeamMembers" element={<GroupedTeamMembers/>} />
+          <Route path="*" element={<NotFound/>} />
+        </Routes>
+        <Footer/>
+      </Router>
     </div>
   )
 }
