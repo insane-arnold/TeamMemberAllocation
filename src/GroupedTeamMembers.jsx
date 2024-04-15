@@ -1,6 +1,10 @@
 import {useState} from 'react';
+import {useContext} from 'react';
+import DataContext from './context/DataContext';
 
-const GroupedTeamMembers = ({employees,selectedTeam,setTeam}) => {
+const GroupedTeamMembers = () => {
+
+  const {employees, selectedTeam, setTeam} = useContext(DataContext);
   
   const [teamMembers,setTeamMembers] = useState(()=>{
       let teamMemberMap = new Map();
